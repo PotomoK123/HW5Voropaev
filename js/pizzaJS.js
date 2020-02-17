@@ -213,9 +213,7 @@ class Menu {
         let filteredPizza = arr.filter((elem) => {
             let tmp = 0;
             let uniqueArray = elem.ingr.filter((value, index, self) =>self.indexOf(value) === index);
-            console.log(uniqueArray);
             for (let i = 0; i < filterArray.length; i++) {
-                console.log(elem);
                 for(let j = 0;j<uniqueArray.length;j++){
                     if (uniqueArray[j].value.includes(filterArray[i])) { tmp++; }
                 }
@@ -351,9 +349,7 @@ function renderPage(type) {
     }
     httpRequest.open("GET", "js/menulist.json", false);
     httpRequest.send();
-    console.log(result.length);
     let menulist = [];
-
     for(let i = 0;i<result.length;i++){
         let ingr = [];
         for(let j = 0;j<result[i].ingr.length;j++){
@@ -361,86 +357,8 @@ function renderPage(type) {
         }
         menulist.push(new Pizza(result[i].picture,result[i].price,ingr,result[i].title));
     }
-    console.log(menulist);
     let menu = new Menu(type, menulist);
-    // let menu = new Menu(type, new Pizza(
-    //     "img/Bavarskaya.png",
-    //     10,
-    //     [0,1,9],
-    //     "Баварская"),
-    //     new Pizza(
-    //         "img/Derevenskaya.png",
-    //         10,
-    //         [3,4,2,5,9],
-    //         "Деревенская"),
-    //     new Pizza(
-    //         "img/Leonardo.png",
-    //         10,
-    //         [10,2,3,0,11],
-    //         "Леонардо"),
-    //     new Pizza(
-    //         "img/Pepperony.png",
-    //         10,
-    //         [0,11,2],
-    //         "Пепперони"),
-    //     new Pizza(
-    //         "img/Tango.png",
-    //         10,
-    //         [2,7,8,6,5],
-    //         "Танго"),
-    //     new Pizza(
-    //         "img/Flamenco.png",
-    //         10,
-    //         [8,2],
-    //         "Фламенко"),
-    //     new Pizza(
-    //         "img/pizza-margarita.jpg",
-    //         10,
-    //         [1,13,12,14],
-    //         "Маргаритта"),
-    //     new Pizza(
-    //         "img/Техас.jpg",
-    //         10,
-    //         [4,10,15,3,9],
-    //         "Техас"),
-    //     new Pizza(
-    //         "img/барбекю.jpg",
-    //         10,
-    //         [17,10,16,15,1,9],
-    //         "Барбекю"
-    //     ),
-    //     new Pizza(
-    //         "img/американа.jpg",
-    //         10,
-    //         [16,6,1,0],
-    //         "Американа"
-    //     ),
-    //     new Pizza(
-    //         "img/гавайская.jpg",
-    //         10,
-    //         [17,18,1],
-    //         "Гавайская"
-    //     ),
-    //     new Pizza(
-    //         "img/кантри.jpg",
-    //         10,
-    //         [10,16,6,15,1,19],
-    //         "Кантри"
-    //     ),
-    //     new Pizza(
-    //         "img/карбонара.jpg",
-    //         10,
-    //         [10,16,6,15,1],
-    //         "Карбонара"
-    //     ),
-    //     new Pizza(
-    //         "img/SalmonPhill.jpg",
-    //         10,
-    //         [1,2,9,20],
-    //         "Лосось Филадельфия"
-    //     )
-    // );
-   
+    
     menu.render(menu.menuList);
     document.getElementById("priceDown").addEventListener("click", () => {
         menu.render(menu.filter(menu.sortPriceDown()));
