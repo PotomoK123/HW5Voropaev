@@ -8,19 +8,53 @@ function checkCache(key, value) {
     }
     return cache[key]
 }
-
-class Pizza {
-    constructor(picture, calories, price, ingr, title) {
-        this.picture = picture;
+class Ingredients {
+    constructor(value, calories, price) {
+        this.value = value;
         this.calories = calories;
         this.price = price;
+    }
+}
+let ingedientsList = [new Ingredients("Пепперони", 50, 20), new Ingredients("Моцарелла", 10, 20), new Ingredients("Пармезан", 13, 15), new Ingredients("Колбаски баварские", 55, 15), new Ingredients("Кукуруза", 7, 5),
+new Ingredients("Перец болгарский", 5, 10), new Ingredients("Ветчина", 40, 30), new Ingredients("Оливки", 30, 30), new Ingredients("Помидор", 10, 20), new Ingredients("Соус Барбекю", 20, 20), new Ingredients("Лук", 5, 5),
+new Ingredients("Соус томатный", 10, 15), new Ingredients("Орегано", 5, 10), new Ingredients("Базилик", 5, 8), new Ingredients("Зелень", 4, 4), new Ingredients("Грибы", 25, 44), new Ingredients("Бекон", 60, 55),
+new Ingredients("Курица", 40, 39), new Ingredients("Ананас", 33, 44), new Ingredients("Соус чесночный", 23, 23), new Ingredients("Лосось", 57, 60)];
+class Pizza {
+    constructor(picture, price, ingr, title) {
+        this.picture = picture;
+        this.calories = 0;
+        for (let i = 0; i < ingr.length; i++) {
+            this.calories = this.calories+ingr[i].calories;
+        }
+        this.price = price;
+        for (let i = 0; i < ingr.length; i++) {
+            this.price += ingr[i].price;
+        }
         this.ingr = ingr;
         this.title = title;
     }
+    addIngredient(item) {
+        if (item instanceof Ingredients) {
+            this.ingr.push(item);
+            this.price += item.price;
+            this.calories += item.calories;
+        } else {
+            console.log("Wrond ingredient");
+        }
+    }
+    removeIngr(item) {
+        if (item instanceof Ingredients) {
+            this.ingr.splice(this.ingr.indexOf(item), 1);
+            this.price -= item.price;
+            this.calories -= item.calories;
+        } else {
+            console.log("Wrond ingredient");
+        }
+    }
 }
 class Menu {
-    constructor(menuType, ...rest) {
-        this.menuList = rest;
+    constructor(menuType, list) {
+        this.menuList = list;
         this.menuType = menuType;
         this.sortType = "default";
     }
@@ -35,32 +69,60 @@ class Menu {
         if (this.menuType.toUpperCase() === "GRID") {
             menuSection.innerHTML = "";
             for (let i = 0; i < arr.length; i++) {
+                let wrap = document.createElement("div");
                 let div = document.createElement("div");
+                let backdiv = document.createElement("div");
+                let backdivWrap = document.createElement("div");
+                wrap.className = "pizzaicon__wrap";
+                backdivWrap.className = "pizzaicon__backdivWrap"
                 div.classList.add("pizzaIcon");
-                div.id = i;
+                div.dataset.title = arr[i].title;
+                backdiv.className = "pizzaIcon--back";
                 let button = document.createElement("button");
                 button.classList.add("pizzaButton");
                 button.innerText = "В корзину";
-                button.id = i;
                 div.appendChild(button);
-                let name = document.createElement("p");
+                let name = document.createElement("h2");
                 name.classList.add("name")
                 name.innerHTML = arr[i].title;
                 div.appendChild(name);
                 let img = document.createElement('img');
                 img.src = arr[i].picture;
                 img.classList.add("pizzaImg")
-                div.appendChild(img);
-                let calories = document.createElement("p");
+                backdivWrap.appendChild(img);
+                let calories = document.createElement("span");
                 calories.innerHTML = "Калории: " + arr[i].calories;
                 div.appendChild(calories);
-                let price = document.createElement("p");
+                let price = document.createElement("span");
                 price.innerHTML = "Цена: " + arr[i].price + " грн.";
                 div.appendChild(price);
-                let ingr = document.createElement("p");
-                ingr.innerHTML = "Ингредиетны: " + arr[i].ingr.join(", ");
+                let ingr = document.createElement("span");
+                ingr.innerHTML = "Ингредиетны: ";
+                for (let j = 0; j < arr[i].ingr.length; j++) {
+                    let ingrSpan = document.createElement("span");
+                    ingrSpan.className = "pizzaicon__ingr";
+                    ingrSpan.innerText = arr[i].ingr[j].value + " ";
+                    ingr.appendChild(ingrSpan);
+                }
+                let addIngr = document.createElement("select");
+                addIngr.className = "pizzaicon__addIngr";
+                addIngr.dataset.title = arr[i].title;
+                let defOption = document.createElement("option");
+                defOption.disabled;
+                defOption.innerText = "Добавить ингредиент";
+                addIngr.appendChild(defOption);
+                for(let i = 0;i<ingedientsList.length;i++){
+                    let ingrOption = document.createElement("option");
+                    ingrOption.value =ingedientsList[i].value;
+                    ingrOption.innerText =ingedientsList[i].value;
+                    addIngr.appendChild(ingrOption);
+                }
                 div.appendChild(ingr);
-                menuSection.appendChild(div);
+                div.appendChild(addIngr);
+                backdiv.appendChild(backdivWrap);
+                wrap.appendChild(div);
+                wrap.appendChild(backdiv);
+                menuSection.appendChild(wrap);
             }
         } else if (this.menuType.toUpperCase() === "LIST") {
             menuSection.innerHTML = "";
@@ -147,10 +209,17 @@ class Menu {
                 filterArray.push(elem.name);
             }
         });
+        
         let filteredPizza = arr.filter((elem) => {
             let tmp = 0;
+            let uniqueArray = elem.ingr.filter((value, index, self) =>self.indexOf(value) === index);
+            console.log(uniqueArray);
             for (let i = 0; i < filterArray.length; i++) {
-                if (elem.ingr.includes(filterArray[i])) { tmp++; }
+                console.log(elem);
+                for(let j = 0;j<uniqueArray.length;j++){
+                    if (uniqueArray[j].value.includes(filterArray[i])) { tmp++; }
+                }
+                
             }
             return tmp == filterArray.length ? true : false;
         });
@@ -188,205 +257,190 @@ function init() {
         renderPage("list");
         document.body.removeChild(div);
     }
-
 }
 function renderPage(type) {
     let content = document.createElement("main");
     footer.before(content);
     content.innerHTML = `<section class="content">
-    <section class="filters">
-        <div id="constructorModal" class="modal">
-            <div class="modal-content">
-                <span id="close">&times;</span>
-                <h1>Конструктор</h1>
-                <ul>
-                    <li>
-                        <p class="inputs-p">Калории</p>
-                        <input class="inputs" type="number" id="caloriesInput" placeholder="Калории">
-                    </li>
-                    <li>
-                        <p class="inputs-p">Цена</p>
-                        <input class="inputs" type="number" id="priceInput" placeholder="Цена">
-                    </li>
-                    <li>
-                        <p class="inputs-p">Ингредиенты</p>
-                        <input class="inputs" type="text" id="ingrInput" placeholder="Ингредиенты">
-                    </li>
-                    <li>
-                        <p class="inputs-p">Название</p>
-                        <input class="inputs" type="text" id="nameInput" placeholder="Название">
-                    </li>
+        <section class="filters">
+            <div id="constructorModal" class="modal">
+                <div class="modal-content">
+                    <span id="close">&times;</span>
+                    <h1>Конструктор</h1>
+                    <ul>
+                        <li>
+                            <p class="inputs-p">Калории</p>
+                            <input class="inputs" type="number" id="caloriesInput" placeholder="Калории">
+                        </li>
+                        <li>
+                            <p class="inputs-p">Цена</p>
+                            <input class="inputs" type="number" id="priceInput" placeholder="Цена">
+                        </li>
+                        <li>
+                            <p class="inputs-p">Ингредиенты</p>
+                            <input class="inputs" type="text" id="ingrInput" placeholder="Ингредиенты">
+                        </li>
+                        <li>
+                            <p class="inputs-p">Название</p>
+                            <input class="inputs" type="text" id="nameInput" placeholder="Название">
+                        </li>
+                        
+                    </ul>
+                    <div id = "modal-div">
+                        <button id="modal-button">Применить</button>
+                    </div>
                     
-                </ul>
-                <div id = "modal-div">
-                    <button id="modal-button">Применить</button>
                 </div>
-                
             </div>
-        </div>
-        <div id="iconModal" class="modal">
-
-            <div id="iconModalContent" class="modal-content">
-               <span id="close2">&times;</span>    
+            <div id="iconModal" class="modal">
+    
+                <div id="iconModalContent" class="modal-content">
+                   <span id="close2">&times;</span>    
+                </div>
             </div>
-        </div>
-        <div class="filters-content">
-            <h1>Фильтры:</h1>
-            <ul>
-                <li>
-                    <input type="checkbox" class="checkbox" id="pepperoni" name = "Пепперони">
-                    <label for="pepperoni">Пепперони</label>
-                </li>
-                <li>
-                    <input type="checkbox" class="checkbox" id="mozzarella" name = "Моцарелла">
-                    <label for="mozzarella">Моцарелла</label>
-                </li>
-                <li>
-                    <input type="checkbox" class="checkbox" id="parmezan" name = "Пармезан">
-                    <label for="parmezan">Пармезан</label>
-                </li>                    
-                <li>
-                    <input type="checkbox" class="checkbox" id="bavarskie" name = "Колбаски баварские">
-                    <label for="bavarskie">Колбаски баварские</label>
-                </li>                    
-                <li>
-                    <input type="checkbox" class="checkbox" id="corn" name = "Кукуруза">
-                    <label for="corn">Кукуруза</label>
-                </li>                    
-                <li>
-                    <input type="checkbox" class="checkbox" id="pepperBolgar" name = "Перец болгарский">
-                    <label for="pepperBolgar">Перец болгарский</label>
-                </li>
-                <li>
-                    <input type="checkbox" class="checkbox" id="ham" name = "Ветчина">
-                    <label for="ham">Ветчина</label>
-                </li>
-                <li>
-                    <input type="checkbox" class="checkbox" id="olives" name = "Оливки">
-                    <label for="olives">Оливки</label>
-                </li>
-                <li>
-                    <input type="checkbox" class="checkbox" id="tomato" name = "Помидор">
-                    <label for="tomato">Помидор</label>
-                </li>
-                    <button id = "filterButton">Применить</button>
-            </ul>
-        </div>
-        <div class="sort">
-            <h1>Сортировать:</h1>
-            <ul>
-                <li>
-                    <a href="#" id="priceDown">От дорогих к дешевым</a>
-                </li>
-                <li>
-                    <a href="#" id="priceUp">От дешевых к дорогим</a>
-                </li>
-                <li>
-                    <a href="#" id="titleDown">По названию (А - Я)</a>
-                </li>
-                <li>
-                    <a href="#" id="titleUp">По названию (Я - А)</a>
-                </li>
-            </ul>
+            <div class="filters__content">
+                <h1 class="filters__content__heading">Фильтры:</h1>
+                <ul class="filters__content__ul">
+                   
+                        <button id = "filterButton">Применить</button>
+                </ul>
+            </div>
+            <div class="filters__sort">
+                <h1 class="filters__sort__heading">Сортировать:</h1>
+                <ul class="filters__sort__ul">
+                    <li class="filters__sort__ul__li">
+                        <a href="#" id="priceDown">От дорогих к дешевым</a>
+                    </li>
+                    <li class="filters__sort__ul__li">
+                        <a href="#" id="priceUp">От дешевых к дорогим</a>
+                    </li>
+                    <li class="filters__sort__ul__li">
+                        <a href="#" id="titleDown">По названию (А - Я)</a>
+                    </li>
+                    <li class="filters__sort__ul__li">
+                        <a href="#" id="titleUp">По названию (Я - А)</a>
+                    </li>
+                </ul>
+    
+            </div>
+        </section>
+        <section class="pizza" id="menuSection">
+            <h1>Меню:</h1>
+    
+        </section>
+    </section>`;
+    for(let i = 0;i<ingedientsList.length;i++){
+        let ingr = document.createElement("li");
+        ingr.className = "filters__content__ul__li";
+        ingr.innerHTML = `<input type="checkbox" class="checkbox" id="${i}" name = "${ingedientsList[i].value}">
+        <label for="${i}">${ingedientsList[i].value}</label>`
+        filterButton.before(ingr);
+    }
 
-        </div>
-    </section>
-    <section class="pizza" id="menuSection">
-        <h1>Меню:</h1>
+    let httpRequest;
+    let result;
+    if(window.XMLHttpRequest){
+        httpRequest = new XMLHttpRequest();
+    }else if(window.ActiveXObject){
+        httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    httpRequest.onreadystatechange = function(){
+        if(this.readyState == 4 && this.status == 200){
+            result = JSON.parse(this.responseText);
+        }
+    }
+    httpRequest.open("GET", "js/menulist.json", false);
+    httpRequest.send();
+    console.log(result.length);
+    let menulist = [];
 
-    </section>
-</section>`;
-    let menu = new Menu(type, new Pizza(
-        "img/Bavarskaya.png",
-        780,
-        79,
-        ["Пепперони", "Моцарелла", "Соус Барбекю"],
-        "Баварская"),
-        new Pizza(
-            "img/Derevenskaya.png",
-            1450,
-            119,
-            ["Колбаски баварские", "Кукуруза", "Моцарелла", "Перец богарский", "Соус барбекю"],
-            "Деревенская"),
-        new Pizza(
-            "img/Leonardo.png",
-            1280,
-            120,
-            ["Лук", "Моцарелла", "Пармезан", "Пепперони", "Соус томатный"],
-            "Леонардо"),
-        new Pizza(
-            "img/Pepperony.png",
-            800,
-            140,
-            ["Пепперони", "Соус томатный", "Пармезан"],
-            "Пепперони"),
-        new Pizza(
-            "img/Tango.png",
-            1100,
-            130,
-            ["Пармезан", "Оливки", "Помидор", "Ветчина", "Перец болгарский"],
-            "Танго"),
-        new Pizza(
-            "img/Flamenco.png",
-            700,
-            135,
-            ["Помидор", "Пармезан"],
-            "Фламенко"),
-        new Pizza(
-            "img/pizza-margarita.jpg",
-            500,
-            110,
-            ["Моцарелла","Базилик","Орегано","Зелень"],
-            "Маргаритта"),
-        new Pizza(
-            "img/Техас.jpg",
-            600,
-            120,
-            ["Кукуруза","Лук","Грибы","Колбаски баварские","Соус барбекю"],
-            "Техас"),
-        new Pizza(
-            "img/барбекю.jpg",
-            500,
-            125,
-            ["Курица","Лук","Бекон","Грибы","Моцарелла","Соус барбекю"],
-            "Барбекю"
-        ),
-        new Pizza(
-            "img/американа.jpg",
-            700,
-            150,
-            ["Бекон","Ветчина","Моцарелла","Пепперони"],
-            "Американа"
-        ),
-        new Pizza(
-            "img/гавайская.jpg",
-            600,
-            130,
-            ["Курица","Ананас","Моцарелла"],
-            "Гавайская"
-        ),
-        new Pizza(
-            "img/кантри.jpg",
-            650,
-            135,
-            ["Лук","Бекон","Ветчина","Грибы","Моцарелла","Соус чесночный"],
-            "Кантри"
-        ),
-        new Pizza(
-            "img/карбонара.jpg",
-            550,
-            125,
-            ["Лук","Бекон","Ветчина","Грибы","Моцарелла"],
-            "Карбонара"
-        ),
-        new Pizza(
-            "img/SalmonPhill.jpg",
-            670,
-            160,
-            ["Моцарелла","Пармезан","Соус барбекю","Лосось"],
-            "Лосось Филадельфия"
-        )
-            );
+    for(let i = 0;i<result.length;i++){
+        let ingr = [];
+        for(let j = 0;j<result[i].ingr.length;j++){
+            ingr.push(ingedientsList[result[i].ingr[j]]);
+        }
+        menulist.push(new Pizza(result[i].picture,result[i].price,ingr,result[i].title));
+    }
+    console.log(menulist);
+    let menu = new Menu(type, menulist);
+    // let menu = new Menu(type, new Pizza(
+    //     "img/Bavarskaya.png",
+    //     10,
+    //     [0,1,9],
+    //     "Баварская"),
+    //     new Pizza(
+    //         "img/Derevenskaya.png",
+    //         10,
+    //         [3,4,2,5,9],
+    //         "Деревенская"),
+    //     new Pizza(
+    //         "img/Leonardo.png",
+    //         10,
+    //         [10,2,3,0,11],
+    //         "Леонардо"),
+    //     new Pizza(
+    //         "img/Pepperony.png",
+    //         10,
+    //         [0,11,2],
+    //         "Пепперони"),
+    //     new Pizza(
+    //         "img/Tango.png",
+    //         10,
+    //         [2,7,8,6,5],
+    //         "Танго"),
+    //     new Pizza(
+    //         "img/Flamenco.png",
+    //         10,
+    //         [8,2],
+    //         "Фламенко"),
+    //     new Pizza(
+    //         "img/pizza-margarita.jpg",
+    //         10,
+    //         [1,13,12,14],
+    //         "Маргаритта"),
+    //     new Pizza(
+    //         "img/Техас.jpg",
+    //         10,
+    //         [4,10,15,3,9],
+    //         "Техас"),
+    //     new Pizza(
+    //         "img/барбекю.jpg",
+    //         10,
+    //         [17,10,16,15,1,9],
+    //         "Барбекю"
+    //     ),
+    //     new Pizza(
+    //         "img/американа.jpg",
+    //         10,
+    //         [16,6,1,0],
+    //         "Американа"
+    //     ),
+    //     new Pizza(
+    //         "img/гавайская.jpg",
+    //         10,
+    //         [17,18,1],
+    //         "Гавайская"
+    //     ),
+    //     new Pizza(
+    //         "img/кантри.jpg",
+    //         10,
+    //         [10,16,6,15,1,19],
+    //         "Кантри"
+    //     ),
+    //     new Pizza(
+    //         "img/карбонара.jpg",
+    //         10,
+    //         [10,16,6,15,1],
+    //         "Карбонара"
+    //     ),
+    //     new Pizza(
+    //         "img/SalmonPhill.jpg",
+    //         10,
+    //         [1,2,9,20],
+    //         "Лосось Филадельфия"
+    //     )
+    // );
+   
     menu.render(menu.menuList);
     document.getElementById("priceDown").addEventListener("click", () => {
         menu.render(menu.filter(menu.sortPriceDown()));
@@ -407,65 +461,17 @@ function renderPage(type) {
     document.getElementById("grid").addEventListener("click", () => {
         if (menu.menuType.toUpperCase() != "GRID") {
             menu.menuType = "grid";
-            switch (menu.sortType) {
-                case "priceDown":
-                    menu.render(menu.filter(menu.sortPriceDown()));
-                    break;
-                case "priceUp":
-                    menu.render(menu.filter(menu.sortPriceUp()));
-                    break;
-                case "titleDown":
-                    menu.render(menu.filter(menu.sortTitleDown()));
-                    break;
-                case "titleUp":
-                    menu.render(menu.filter(menu.sortTitleUp()));
-                    break;
-                default:
-                    menu.render(menu.filter(menu.menuList));
-                    break;
-            }
+            renderMenu(menu);
         }
     });
     document.getElementById("list").addEventListener("click", () => {
         if (menu.menuType.toUpperCase() != "LIST") {
             menu.menuType = "list";
-            switch (menu.sortType) {
-                case "priceDown":
-                    menu.render(menu.filter(menu.sortPriceDown()));
-                    break;
-                case "priceUp":
-                    menu.render(menu.filter(menu.sortPriceUp()));
-                    break;
-                case "titleDown":
-                    menu.render(menu.filter(menu.sortTitleDown()));
-                    break;
-                case "titleUp":
-                    menu.render(menu.filter(menu.sortTitleUp()));
-                    break;
-                default:
-                    menu.render(menu.filter(menu.menuList));
-                    break;
-            }
+            renderMenu(menu);
         }
     });
     document.getElementById("filterButton").addEventListener("click", () => {
-        switch (menu.sortType) {
-            case "priceDown":
-                menu.render(menu.filter(menu.sortPriceDown()));
-                break;
-            case "priceUp":
-                menu.render(menu.filter(menu.sortPriceUp()));
-                break;
-            case "titleDown":
-                menu.render(menu.filter(menu.sortTitleDown()));
-                break;
-            case "titleUp":
-                menu.render(menu.filter(menu.sortTitleUp()));
-                break;
-            default:
-                menu.render(menu.filter(menu.menuList));
-                break;
-        }
+        renderMenu(menu);
     });
     document.getElementById("constructor").addEventListener("click", () => {
         alert("В разработке.");
@@ -474,362 +480,56 @@ function renderPage(type) {
         if (event.target.tagName == "BUTTON") {
             alert("В разработке.");
         }
-    })
-
-
-}
-init();
-
-/* Как было реализовано раньше
-function Gird(picture, calories, price, ingr, name) {
-    this.picture = picture;
-    this.calories = calories;
-    this.price = price;
-    this.ingr = ingr;
-    this.name = name;
-
-}
-
-girdArray.push(
-    new Gird(
-        "img/Bavarskaya.png",
-        780,
-        79,
-        ["Пепперони", "Моцарелла", "Соус Барбекю"],
-        "Баварская"),
-    new Gird(
-        "img/Derevenskaya.png",
-        1450,
-        119,
-        ["Колбаски баварские", "Кукуруза", "Моцарелла", "Перец богарский", "Соус барбекю"],
-        "Деревенская"),
-    new Gird(
-        "img/Leonardo.png",
-        1280,
-        120,
-        ["Лук", "Моцарелла", "Пармезан", "Пепперони", "Соус томатный"],
-        "Леонардо"),
-    new Gird(
-        "img/Pepperony.png",
-        800,
-        140,
-        ["Пепперони", "Соус томатный", "Пармезан"],
-        "Пепперони"),
-    new Gird(
-        "img/Tango.png",
-        1100,
-        130,
-        ["Пармезан", "Оливки", "Помидор", "Ветчина", "Перец болгарский"],
-        "Танго"),
-    new Gird(
-        "img/Flamenco.png",
-        700,
-        135,
-        ["Помидор", "Пармезан"],
-        "Фламенко")
-);
-
-function showGrid(arr) {
-    menuSection.innerHTML = "";
-
-    for (let i = 0; i < arr.length; i++) {
-        let div = document.createElement("div");
-        div.classList.add("pizzaIcon");
-        div.id = i;
-        let button = document.createElement("button");
-        button.classList.add("pizzaButton");
-        button.innerText = "В корзину";
-        button.id = i;
-        div.appendChild(button);
-        menuSection.appendChild(div);
-        let name = document.createElement("p");
-        name.classList.add("name")
-        name.innerHTML = arr[i].name;
-        div.appendChild(name);
-        let img = document.createElement('img');
-        img.src = arr[i].picture;
-        img.classList.add("pizzaImg")
-        div.appendChild(img);
-
-        let calories = document.createElement("p");
-        calories.innerHTML = "Калории: " + arr[i].calories;
-        div.appendChild(calories);
-        let price = document.createElement("p");
-        price.innerHTML = "Цена: " + arr[i].price + " грн.";
-        div.appendChild(price);
-        let ingr = document.createElement("p");
-        ingr.innerHTML = "Ингредиетны: " + arr[i].ingr.join(", ");
-        div.appendChild(ingr);
-    }
-}
-function showList(girdArray) {
-    menuSection.innerHTML = "";
-    for (let i = 0; i < girdArray.length; i++) {
-        let div = document.createElement("div");
-        div.classList.add("pizzaIconList");
-        menuSection.appendChild(div);
-        let img = document.createElement('img');
-        img.classList.add("pizzaLogo");
-        img.src = "img/pizzaLogo.png";
-        div.appendChild(img);
-        let calories = document.createElement("p");
-        calories.classList.add("pList");
-        calories.innerHTML = girdArray[i].name + " Калории: " + girdArray[i].calories + " Цена: " + girdArray[i].price;
-        div.appendChild(calories);
-
-
-    }
-}
-
-function priceSort() {
-    priceDownArray.length = 0;
-    priceUpArray.length = 0;
-    calDownArray.length = 0;
-    calUpArray.length = 0;
-    for (let i = 0; i < girdArray.length; i++) {
-        priceDownArray.push(girdArray[i]);
-        calDownArray.push(girdArray[i]);
-    }
-    for (let i = 0; i < priceDownArray.length; i++) {
-        for (let j = 1; j < priceDownArray.length - i; j++) {
-            if (priceDownArray[j - 1].price < priceDownArray[j].price) {
-                let tmp = priceDownArray[j - 1];
-                priceDownArray[j - 1] = priceDownArray[j];
-                priceDownArray[j] = tmp;
+        if (event.target.className.indexOf("pizzaIcon") != -1) {
+            if ((event.target.parentNode.lastChild != event.target && event.target.className.indexOf("pizzaIcon--rotatedoff") != -1) || event.target.className == "pizzaIcon") {
+                let target = event.target.parentNode;
+                target.firstChild.classList.add("pizzaIcon--rotated");
+                target.firstChild.classList.remove("pizzaIcon--rotatedoff");
+                target.lastChild.classList.remove("pizzaIcon--rotated");
+                target.lastChild.classList.add("pizzaIcon--rotatedoff");
+            } else {
+                let target = event.target.parentNode;
+                target.firstChild.classList.remove("pizzaIcon--rotated");
+                target.firstChild.classList.add("pizzaIcon--rotatedoff");
+                target.lastChild.classList.add("pizzaIcon--rotated");
+                target.lastChild.classList.remove("pizzaIcon--rotatedoff");
             }
         }
-    }
-    for (let i = 0; i < calDownArray.length; i++) {
-        for (let j = 1; j < calDownArray.length - i; j++) {
-            if (calDownArray[j - 1].calories < calDownArray[j].calories) {
-                let tmp = calDownArray[j - 1];
-                calDownArray[j - 1] = calDownArray[j];
-                calDownArray[j] = tmp;
-            }
+        if(event.target.tagName == "SPAN"&&event.target.className == "pizzaicon__ingr"){
+            let element = menu.menuList.find((elem)=> elem.title ==event.target.parentNode.parentNode.dataset.title);
+            element.removeIngr(ingedientsList.find((elem)=>elem.value.indexOf(event.target.innerText.slice(0,event.target.innerText.length-1))!=-1));
+            renderMenu(menu);
         }
-    }
-    for (let i = 0; i < priceDownArray.length; i++) {
-        priceUpArray.unshift(priceDownArray[i]);
-    }
-    for (let i = 0; i < calDownArray.length; i++) {
-        calUpArray.unshift(calDownArray[i]);
-    }
-
-}
-
-function constructor(arr) {
-    let modal = document.getElementById("constructorModal");
-    modal.style.display = "block";
-    document.getElementById("modal-button").addEventListener('click', () => {
-        if (caloriesInput.valueAsNumber == NaN || caloriesInput.valueAsNumber <= 0) {
-            alert("Введите количество калорий больше 0");
-        } else if (priceInput.valueAsNumber == NaN || priceInput.valueAsNumber <= 0) {
-            alert("Введите цену больше 0");
-        } else if (ingrInput.value == "") {
-            alert("Введите ингредиенты");
-        } else if (nameInput.value == "") {
-            alert("Введите название");
-        } else {
-            arr.push(new Gird(
-                "img/table.jpg",
-                caloriesInput.valueAsNumber,
-                priceInput.valueAsNumber,
-                ingrInput.value.split(', '),
-                nameInput.value
-            ));
-            priceSort();
-            showGrid(arr);
-            modal.style.display = "none";
-
+        
+    });
+    document.getElementById("menuSection").addEventListener("change", (event) => {
+        if(event.target.tagName == "SELECT"){
+            let element = menu.menuList.find((elem)=>event.target.dataset.title==elem.title);
+            element.addIngredient(ingedientsList.find((elem)=>elem.value.indexOf(event.target.value) !=-1));
+            renderMenu(menu);
         }
-
     });
 
-
-
 }
-function addToBasket(elem, array) {
-    let tmp = true;
-
-    // for(let i = 0;i<localStorage.length;i++){
-    //     if(localStorage.getItem(i)==JSON.stringify(girdArray[elem])){
-    //         localStorage.removeItem(i);
-    //         tmp++;
-
-    //     }
-
-    // }
-    for (let i = 0; i < basketArray.length; i++) {
-        if (basketArray[i].object == array[elem]) {
-            tmp = false;
-            basketArray[i].count++;
-            break;
-        }
-    }
-    if (tmp == true) {
-        var p = {
-            count: 1,
-            object: array[elem]
-        }
-
-
-        basketArray.push(p);
-    }
-    console.log(basketArray);
-
-
-}
-// var iconButtons = document.getElementsByClassName("pizzaIcon");
-// function largeIcon(elem, array){
-//     let modal = document.getElementById("iconModal");
-//     let div = document.getElementById("iconModalContent")
-//     modal.style.display = "block";
-//     let name = document.createElement("p");
-//     name.classList.add("name")
-//     name.innerHTML = array[elem].name;
-//     div.appendChild(name);
-//     let img = document.createElement('img');
-//     img.src = array[elem].picture;
-//     img.classList.add("pizzaImg")
-//     div.appendChild(img);
-
-//     let calories = document.createElement("p");
-//     calories.innerHTML = "Калории: " + array[elem].calories;
-//     div.appendChild(calories);
-//     let price = document.createElement("p");
-//     price.innerHTML = "Цена: " + array[elem].price + " грн.";
-//     div.appendChild(price);
-//     let ingr = document.createElement("p");
-//     ingr.innerHTML = "Ингредиетны: " + array[elem].ingr.join(", ");
-//     div.appendChild(ingr);
-
-// }
-function pushBasketToStorage(arr) {
-    localStorage.clear();
-    for (let i = 0; i < arr.length; i++) {
-        localStorage.setItem(i, JSON.stringify(arr[i]));
-    }
-}
-function filter(arr) {
-    var filterArray = [];
-    var filteredPizza = [];
-    var tmp = 0;
-    var checkbox = document.getElementsByClassName("checkbox");
-    Array.from(checkbox).forEach(elem => {
-        if (elem.checked) {
-            filterArray.push(elem.name);
-        }
-    })
-    for (let i = 0; i < arr.length; i++) {
-        for (let j = 0; j < filterArray.length; j++) {
-            for (let k = 0; k < arr[i].ingr.length; k++) {
-                if (filterArray[j] == (arr[i].ingr[k])) {
-                    tmp++;
-                }
-            }
-        }
-        if (tmp == filterArray.length) {
-            filteredPizza.push(arr[i])
-        }
-        tmp = 0;
-    }
-    showGrid(filteredPizza);
-}
-showGrid(girdArray);
-priceSort();
-document.getElementById("grid").addEventListener("click", () => {
-    showGrid(girdArray);
-    sort = "Standart";
-    view = "Grid";
-});
-document.getElementById("list").addEventListener("click", () => {
-    showList(girdArray);
-    sort = "Standart";
-    view = "List";
-});
-document.getElementById("priceUp").addEventListener('click', () => {
-    if (view == "Grid") {
-        filter(priceUpArray);
-        //basketBtns(iconButtons, largeIcon, priceUpArray);
-        basketBtns(pizzaButton, addToBasket, priceUpArray);
-        //showGrid(priceUpArray);
-    } else
-        showList(priceUpArray);
-    sort = "priceUp";
-});
-document.getElementById("priceDown").addEventListener('click', () => {
-    if (view == "Grid") {
-        filter(priceDownArray);
-        //basketBtns(iconButtons, largeIcon, priceDownArray);
-        basketBtns(pizzaButton, addToBasket, priceDownArray);
-        //showGrid(priceDownArray);
-    } else
-        showList(priceDownArray);
-    sort = "priceDown";
-});
-document.getElementById("calUp").addEventListener('click', () => {
-    if (view == "Grid") {
-        filter(calUpArray);
-        // basketBtns(iconButtons, largeIcon, calUpArray);
-        basketBtns(pizzaButton, addToBasket, calUpArray);
-        //showGrid(calUpArray);
-    } else
-        showList(calUpArray);
-    sort = "calUp";
-});
-document.getElementById("calDown").addEventListener('click', () => {
-    if (view == "Grid") {
-        filter(calDownArray);
-        // basketBtns(iconButtons, largeIcon, calDownArray);
-        basketBtns(pizzaButton, addToBasket, calDownArray);
-        //showGrid(calDownArray);
-    } else
-        showList(calDownArray);
-    sort = "calDown";
-});
-document.getElementById("constructor").addEventListener('click', () => {
-    constructor(girdArray);
-    caloriesInput.valueAsNumber = undefined;
-    priceInput.valueAsNumber = undefined;
-    ingrInput.value = "";
-    nameInput.value = "";
-});
-document.getElementById("close").addEventListener("click", () => {
-    constructorModal.style.display = "none";
-});
-// document.getElementById("close2").addEventListener("click", () => {
-//     iconModal.style.display = "none";
-//     iconModalContent.innerHTML = "";
-// });
-
-function basketBtns(arr, foo, array) {
-    Array.from(arr).forEach(element => {
-        element.addEventListener("click", () => {
-            foo(element.id, array);
-        });
-
-    });
-}
-// basketBtns(iconButtons, largeIcon, girdArray);
-basketBtns(pizzaButton, addToBasket, girdArray);
-document.getElementById("filterButton").addEventListener("click", () => {
-    if (view == "List")
-        alert("Фильтры работают только в режиме сетки.");
-    switch (sort) {
-        case "priceUp":
-            filter(priceUpArray);
-            break;
+function renderMenu(menu){
+    switch (menu.sortType) {
         case "priceDown":
-            filter(priceDownArray);
+            menu.render(menu.filter(menu.sortPriceDown()));
             break;
-        case "calUp":
-            filter(calUpArray);
+        case "priceUp":
+            menu.render(menu.filter(menu.sortPriceUp()));
             break;
-        case "calDown":
-            filter(calDownArray);
+        case "titleDown":
+            menu.render(menu.filter(menu.sortTitleDown()));
+            break;
+        case "titleUp":
+            menu.render(menu.filter(menu.sortTitleUp()));
             break;
         default:
-            filter(girdArray);
+            menu.render(menu.filter(menu.menuList));
+            break;
     }
-});
-document.getElementById("basket").addEventListener("click", () => { pushBasketToStorage(basketArray); });*/
+}
+
+
+init();

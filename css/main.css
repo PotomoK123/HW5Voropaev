@@ -1,14 +1,42 @@
-html, body{
+::-webkit-scrollbar{
+    width:7px;
+    
+}
+::-webkit-scrollbar-thumb{
+    border-width:1px 1px 1px 2px;
+    border-color: #000;
+    background-color: #333;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover{
+    border-width: 1px 1px 1px 2px;
+    border-color: #000;
+    background-color: #2f2f2f;
+}
+::-webkit-scrollbar-track{
+    border-width:0;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-track-piece{
+    background-color: #111;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-track:hover{
+    border-left: solid 1px #ccc;
+    background-color: #eee;
+}
+html, body {
     width: 100%;
 }
 
-body{
+body {
     font-family: 'Montserrat', sans-serif;
     padding: 0;
     margin: 0;
     background: #2f2f2f;
 }
-.start-modal{
+
+.start-modal {
     width: 100vw;
     height: 100vh;
     top: 0;
@@ -17,86 +45,86 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0, 0, 0, 0.8);
 }
-.start-modal__question{
+
+.start-modal__question {
     width: 40%;
     height: 40%;
     padding: 5%;
     background-color: #ccc;
     border-radius: 10px;
 }
-.header{
+
+.header {
     background-image: url(../img/top.jpg);
-    background-size: auto 500px;
+    background-size: cover;
     display: block;
     width: 100%;
     height: 150px;
 }
 
-.content{
+.content {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     align-items: flex-start;
     color: #fff;
 }
-
-div, p, a, img, form, button{
+span{
+    margin: 5px;
+}
+div, p, a, img, form, button {
     box-sizing: border-box;
     text-align: center;
 }
 
-h1, h2, h3, h4 ,h5, h6{
+h1, h2, h3, h4, h5, h6 {
     padding: 0;
     margin: 0;
 }
 
-a{
-text-decoration: none;
+a {
+    text-decoration: none;
 }
 
-ul, li{
+ul, li {
     display: block;
     padding: 0;
     margin: 0;
 }
 
-
-
-.nav{
+.header__nav {
     display: flex;
     align-items: center;
 }
 
-.menu{
-    margin-left: 150px;
-}
-.menu li{
-    display: inline;
-    font-size: 1.78vw;
-    margin-right: 25px;
+.header__nav__menu {
+    display: flex;
+    justify-content: space-evenly;
+    margin-left: 10%;
+    min-width: 50%;
 }
 
-.menu li a{
+.header__nav__menu__button {
+    font-size: 1.78vw;
     color: #fff;
     padding: 12px 0;
 }
 
-.menu a:hover {
+.header__nav__menu__button:hover {
     color: #f7941d;
     border-top: 3px solid #f7941d;
     border-bottom: 3px solid #f7941d;
     transition: all 0.2s ease;
-    
 }
 
-.logo{
+.header__nav__logo {
     padding: 15px 15px;
     margin: 0;
     align-items: center;
 }
 
-.filters{
+.filters {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -108,89 +136,140 @@ ul, li{
     border-radius: 5px;
 }
 
-.filters h1{
-   display: block;   
-   padding: 15px 15px; 
-   font-size: 25px;
-}
-.filters-content{
-    width: 100%;
-}
-.filters-content ul li{
-    font-size: 1.12vw;
+.filters__content__heading, .filters__sort__heading {
+    padding: 15px 15px;
+    font-size: 25px;
 }
 
-.sort li{
-   margin: 10px; 
+.filters__content {
+    width: 100%;
 }
-.sort li a{
+
+.filters__content__ul {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: start;
+    max-width: 70%;
+    margin: 0 auto;
+}
+
+.filters__content__ul__li {
+    margin-bottom: 5px;
+}
+
+.filters__sort__ul__li {
+    margin: 10px;
+}
+
+.filters__sort__ul__li a {
     color: #fff;
     padding: 10px;
 }
-.sort li a:hover{
+
+.filters__sort__ul__li a:hover {
     color: #f7941d;
     transition: all 0.2s ease;
 }
 
-.pizza{ 
+.pizza {
     position: relative;
     display: flex;
-    justify-content: start;
+    justify-content: center;
     flex-wrap: wrap;
     width: 70vw;
-    overflow:auto;
     border: 3px solid #3d3d3d;
     background: #3d3d3d;
     border-radius: 5px;
-    margin-top: 30px;
-    margin-left: 30px;
-    margin-right: 30px;
+    margin: 30px;
 }
 
-.pizza h1{
+.pizza h1 {
     display: block;
     padding: 15px 15px;
     font-size: 25px;
 }
 
-.pizzaIcon{ 
-    display: grid;
+.pizzaicon__wrap {
     width: 220px;
-    height: 470px;
-    overflow: fixed;
+    position: relative;
+    display: flex;
+    margin: 15px 15px;
+}
+
+.pizzaIcon {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 5px;
+    height: 300px;
     border: 3px solid #555555;
     border-radius: 10px;
     background: #555555;
-    float: left;
-    margin: 15px 15px;
+    z-index: 2;
+    backface-visibility: hidden;
 }
-.pizzaIcon:hover{
-    border-color: #f7941d;
+
+.pizzaIcon--back {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    position: absolute;
+    height: 300px;
+    width: 100%;
+    border: 3px solid #555555;
+    border-radius: 10px;
+    background: #555555;
+}
+
+.pizzaIcon--rotated {
+    animation: rotateAnim .5s ease forwards;
+    
+}
+
+.pizzaIcon--rotatedoff {
+    animation: rotateOffAnim .5s ease forwards;
+}
+
+.pizzaIcon:hover {
+    box-shadow: 1px 1px 10px #2f2f2f, -1px -1px 10px #2f2f2f;
     transition: all 0.2s ease;
 }
-.pizzaButton, 
-.start-modal__question__button{
+.pizzaicon__ingr{
+    background-color: #2f2f2f;
+}
+.pizzaicon__ingr:hover{
+    background-color: #552222;
+    text-decoration: line-through;
+    cursor: pointer;
+}
+.name{
+    font-size: 1.3em;
+}
+
+.pizzaButton, .start-modal__question__button {
     background-color: #646363;
     border: 3px solid #555555;
     border-radius: 10px;
     font-size: 18px;
     color: #fff;
     width: 200px;
-    height: 40px; 
+    height: 40px;
     margin: 5px;
 }
-.pizzaButton:hover,
-.start-modal__question__button:hover{
+
+.pizzaButton:hover, .start-modal__question__button:hover {
     color: #f7941d;
     border-color: #f7941d;
 }
 
-.pizza-plate li h1{
+.pizza-plate li h1 {
     font-size: 17px;
     text-align: center;
 }
 
-.pizzaIconList{
+.pizzaIconList {
     margin-left: 25px;
     width: 95%;
     display: block;
@@ -198,36 +277,43 @@ ul, li{
     border: 3px solid #555555;
     border-radius: 10px;
     background: #555555;
-    margin-bottom:15px;
+    margin-bottom: 15px;
     padding-bottom: 10px;
-
 }
 
-.pizza-list li h1{
+.pizza-list li h1 {
     font-size: 17px;
 }
 
-.pizza-list li:hover{
+.pizza-list li:hover {
     color: #f7941d;
     border: 3px solid #f7941d;
     transition: all 0.3s ease;
 }
+.pizzaicon__backdivWrap{
+    width: 100%;
+    height: 0;
+    margin: 20px;
+}
+.pizzaicon__addIngr{
+    margin: 20px 10px 10px 5px;
 
-.pizzaImg{
-    width: 70%;    
-    margin-left: 15%; 
 }
-.pizzaLogo{
-    width: 4%;    
+.pizzaImg {
+    max-width: 100%;
+}
+
+.pizzaLogo {
+    width: 4%;
     float: left;
-    margin: 10px 10px 10px 10px; 
-    
+    margin: 10px 10px 10px 10px;
 }
-.pList{
+
+.pList {
     text-align: left;
 }
 
-.modal{
+.modal {
     display: none;
     position: fixed;
     left: 0;
@@ -237,45 +323,54 @@ ul, li{
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.7)
 }
-.modal-content{
+
+.modal-content {
     background-color: #555555;
     margin: 15% auto;
     padding: 20px;
     width: 40%;
     border-radius: 5px;
 }
-#close, #close2{
+
+#close, #close2 {
     color: white;
     float: right;
     font-size: 30px;
 }
-#close:hover{
+
+#close:hover {
     color: #f7941d;
     transition: all 0.3s ease;
 }
-.constructorSpan{
+
+.constructorSpan {
     background-color: #552222;
     margin: 15% auto;
     padding: 20px;
     width: 70%;
 }
-.inputs{
+
+.inputs {
     font-size: 18px;
     height: 20px;
     width: 70%;
 }
-.modal-content li{
+
+.modal-content li {
     margin: 20px;
 }
-.inputs-p{
+
+.inputs-p {
     text-align: center;
     font-size: 18px;
     margin-bottom: 5px;
 }
-.modal-div{
+
+.modal-div {
     margin: 50px;
 }
-#modal-button{
+
+#modal-button {
     background-color: #646363;
     border: 3px solid #555555;
     border-radius: 10px;
@@ -284,34 +379,54 @@ ul, li{
     width: 220px;
     height: 50px;
     margin: 20px;
-
 }
-#modal-button:hover{
+
+#modal-button:hover {
     border: #f7941d solid 3px;
     color: #f7941d;
     transition: all 0.3s ease;
-    
 }
-#filterButton{
+
+#filterButton {
     background-color: #646363;
     border: 3px solid #555555;
     border-radius: 10px;
     font-size: 18px;
     color: #fff;
     height: 50px;
-    
     margin: 10px auto;
     padding: 0 10px;
 }
-#filterButton:hover{
+
+#filterButton:hover {
     border-color: #f7941d;
     color: #f7941d;
     transition: all 0.3s ease;
 }
-.filters-content li{
+
+.filters-content li {
     float: left;
     margin-right: 20%;
     margin-left: 30px;
     margin-bottom: 5px;
-    
+}
+
+.footer {
+    padding: 5vh;
+    background-color: #555555;
+}
+
+@keyframes rotateAnim {
+    100% {
+        transform: rotateY(180deg);
+    }
+}
+
+@keyframes rotateOffAnim {
+    0% {
+        transform: rotateY(180deg);
+    }
+    100% {
+        transform: rotateY(0deg);
+    }
 }
