@@ -23,10 +23,11 @@ class Pizza {
     constructor(picture, price, ingr, title) {
         this.picture = picture;
         this.calories = 0;
+        this.calories = 50;
         for (let i = 0; i < ingr.length; i++) {
-            this.calories = this.calories+ingr[i].calories;
+            this.calories = this.calories + ingr[i].calories;
         }
-        this.price = price;
+        this.price = price + 50;
         for (let i = 0; i < ingr.length; i++) {
             this.price += ingr[i].price;
         }
@@ -57,6 +58,8 @@ class Menu {
         this.menuList = list;
         this.menuType = menuType;
         this.sortType = "default";
+        this.cartArray = JSON.parse(localStorage.getItem("cartListV")) || [];
+
     }
     addPizza(item) {
         if (item instanceof Pizza) {
@@ -86,6 +89,7 @@ class Menu {
                 name.classList.add("name")
                 name.innerHTML = arr[i].title;
                 div.appendChild(name);
+
                 let img = document.createElement('img');
                 img.src = arr[i].picture;
                 img.classList.add("pizzaImg")
@@ -111,14 +115,18 @@ class Menu {
                 defOption.disabled;
                 defOption.innerText = "Добавить ингредиент";
                 addIngr.appendChild(defOption);
-                for(let i = 0;i<ingedientsList.length;i++){
+                for (let i = 0; i < ingedientsList.length; i++) {
                     let ingrOption = document.createElement("option");
-                    ingrOption.value =ingedientsList[i].value;
-                    ingrOption.innerText =ingedientsList[i].value;
+                    ingrOption.value = ingedientsList[i].value;
+                    ingrOption.innerText = ingedientsList[i].value;
                     addIngr.appendChild(ingrOption);
                 }
                 div.appendChild(ingr);
                 div.appendChild(addIngr);
+                let nameB = document.createElement("h2");
+                nameB.classList.add("name")
+                nameB.innerHTML = arr[i].title;
+                backdivWrap.appendChild(nameB);
                 backdiv.appendChild(backdivWrap);
                 wrap.appendChild(div);
                 wrap.appendChild(backdiv);
@@ -209,15 +217,15 @@ class Menu {
                 filterArray.push(elem.name);
             }
         });
-        
+
         let filteredPizza = arr.filter((elem) => {
             let tmp = 0;
-            let uniqueArray = elem.ingr.filter((value, index, self) =>self.indexOf(value) === index);
+            let uniqueArray = elem.ingr.filter((value, index, self) => self.indexOf(value) === index);
             for (let i = 0; i < filterArray.length; i++) {
-                for(let j = 0;j<uniqueArray.length;j++){
+                for (let j = 0; j < uniqueArray.length; j++) {
                     if (uniqueArray[j].value.includes(filterArray[i])) { tmp++; }
                 }
-                
+
             }
             return tmp == filterArray.length ? true : false;
         });
@@ -261,39 +269,24 @@ function renderPage(type) {
     footer.before(content);
     content.innerHTML = `<section class="content">
         <section class="filters">
-            <div id="constructorModal" class="modal">
-                <div class="modal-content">
+            <div id="constructorModal" class="constructor__modal">
+                <div class="constructor__modal__content">
                     <span id="close">&times;</span>
                     <h1>Конструктор</h1>
                     <ul>
                         <li>
-                            <p class="inputs-p">Калории</p>
-                            <input class="inputs" type="number" id="caloriesInput" placeholder="Калории">
-                        </li>
-                        <li>
-                            <p class="inputs-p">Цена</p>
-                            <input class="inputs" type="number" id="priceInput" placeholder="Цена">
-                        </li>
-                        <li>
-                            <p class="inputs-p">Ингредиенты</p>
-                            <input class="inputs" type="text" id="ingrInput" placeholder="Ингредиенты">
-                        </li>
-                        <li>
                             <p class="inputs-p">Название</p>
                             <input class="inputs" type="text" id="nameInput" placeholder="Название">
                         </li>
-                        
+                        <li>
+                            <p class="inputs-p">Ингредиенты</p>
+                            <ul id = "constructor__ingr" class = "filters__content__ul"></ul>
+                        </li>                       
                     </ul>
                     <div id = "modal-div">
                         <button id="modal-button">Применить</button>
                     </div>
                     
-                </div>
-            </div>
-            <div id="iconModal" class="modal">
-    
-                <div id="iconModalContent" class="modal-content">
-                   <span id="close2">&times;</span>    
                 </div>
             </div>
             <div class="filters__content">
@@ -327,38 +320,47 @@ function renderPage(type) {
     
         </section>
     </section>`;
-    for(let i = 0;i<ingedientsList.length;i++){
+    for (let i = 0; i < ingedientsList.length; i++) {
         let ingr = document.createElement("li");
         ingr.className = "filters__content__ul__li";
         ingr.innerHTML = `<input type="checkbox" class="checkbox" id="${i}" name = "${ingedientsList[i].value}">
         <label for="${i}">${ingedientsList[i].value}</label>`
+        let ingrC = document.createElement("li");
+        ingrC.className = "filters__content__ul__li";
+        ingrC.innerHTML = `<input type="checkbox" class="checkboxC" id="${i}" name = "${ingedientsList[i].value}">
+        <label for="${i}">${ingedientsList[i].value}</label>`
         filterButton.before(ingr);
+        constructor__ingr.appendChild(ingrC);
     }
 
     let httpRequest;
     let result;
-    if(window.XMLHttpRequest){
-        httpRequest = new XMLHttpRequest();
-    }else if(window.ActiveXObject){
-        httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
-    }
-    httpRequest.onreadystatechange = function(){
-        if(this.readyState == 4 && this.status == 200){
-            result = JSON.parse(this.responseText);
+    if (!(localStorage.getItem("menuListV"))) {
+        if (window.XMLHttpRequest) {
+            httpRequest = new XMLHttpRequest();
+        } else if (window.ActiveXObject) {
+            httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
         }
+        httpRequest.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                result = JSON.parse(this.responseText);
+            }
+        }
+        httpRequest.open("GET", "js/menulist.json", false);
+        httpRequest.send();
+    } else {
+        result = JSON.parse(localStorage.getItem("menuListV"));
     }
-    httpRequest.open("GET", "js/menulist.json", false);
-    httpRequest.send();
     let menulist = [];
-    for(let i = 0;i<result.length;i++){
+    for (let i = 0; i < result.length; i++) {
         let ingr = [];
-        for(let j = 0;j<result[i].ingr.length;j++){
+        for (let j = 0; j < result[i].ingr.length; j++) {
             ingr.push(ingedientsList[result[i].ingr[j]]);
         }
-        menulist.push(new Pizza(result[i].picture,result[i].price,ingr,result[i].title));
+        menulist.push(new Pizza(result[i].picture, result[i].price, ingr, result[i].title));
     }
     let menu = new Menu(type, menulist);
-    
+
     menu.render(menu.menuList);
     document.getElementById("priceDown").addEventListener("click", () => {
         menu.render(menu.filter(menu.sortPriceDown()));
@@ -392,11 +394,19 @@ function renderPage(type) {
         renderMenu(menu);
     });
     document.getElementById("constructor").addEventListener("click", () => {
-        alert("В разработке.");
+        constructorModal.classList.add("constructor__modal--visible");
     });
+    document.getElementById("close").addEventListener("click", () => {
+        constructorModal.classList.remove("constructor__modal--visible");
+    });
+    document.getElementById("cart").addEventListener("click", ()=>{
+        localStorage.setItem("cartListV", JSON.stringify(menu.cartArray));
+    })
     document.getElementById("menuSection").addEventListener("click", (event) => {
         if (event.target.tagName == "BUTTON") {
-            alert("В разработке.");
+            let element = menu.menuList.find((elem) => elem.title == event.target.parentNode.dataset.title);
+            let clone = Object.assign({},element);
+            menu.cartArray.push(clone);
         }
         if (event.target.className.indexOf("pizzaIcon") != -1) {
             if ((event.target.parentNode.lastChild != event.target && event.target.className.indexOf("pizzaIcon--rotatedoff") != -1) || event.target.className == "pizzaIcon") {
@@ -413,23 +423,53 @@ function renderPage(type) {
                 target.lastChild.classList.remove("pizzaIcon--rotatedoff");
             }
         }
-        if(event.target.tagName == "SPAN"&&event.target.className == "pizzaicon__ingr"){
-            let element = menu.menuList.find((elem)=> elem.title ==event.target.parentNode.parentNode.dataset.title);
-            element.removeIngr(ingedientsList.find((elem)=>elem.value.indexOf(event.target.innerText.slice(0,event.target.innerText.length-1))!=-1));
+        if (event.target.tagName == "SPAN" && event.target.className == "pizzaicon__ingr") {
+            let element = menu.menuList.find((elem) => elem.title == event.target.parentNode.parentNode.dataset.title);
+            element.removeIngr(ingedientsList.find((elem) => elem.value.indexOf(event.target.innerText.slice(0, event.target.innerText.length - 1)) != -1));
             renderMenu(menu);
         }
-        
     });
     document.getElementById("menuSection").addEventListener("change", (event) => {
-        if(event.target.tagName == "SELECT"){
-            let element = menu.menuList.find((elem)=>event.target.dataset.title==elem.title);
-            element.addIngredient(ingedientsList.find((elem)=>elem.value.indexOf(event.target.value) !=-1));
+        if (event.target.tagName == "SELECT") {
+            let element = menu.menuList.find((elem) => event.target.dataset.title == elem.title);
+            element.addIngredient(ingedientsList.find((elem) => elem.value.indexOf(event.target.value) != -1));
             renderMenu(menu);
+        }
+    });
+    document.getElementById("modal-button").addEventListener("click", () => {
+        let ingredientsArr = [];
+        let checkedIngr = [];
+        var checkbox = document.getElementsByClassName("checkboxC");
+        Array.from(checkbox).forEach(elem => {
+            if (elem.checked) {
+                checkedIngr.push(elem.name);
+            }
+        });
+        ingedientsList.forEach((elem) => {
+            if (checkedIngr.includes(elem.value)) {
+                ingredientsArr.push(elem);
+            }
+        });
+        if (nameInput.value.length > 0 && ingredientsArr.length > 0) {
+            menu.addPizza(new Pizza("../img/table.jpg", 10, ingredientsArr, nameInput.value));
+            renderMenu(menu);
+            constructorModal.classList.remove("constructor__modal--visible");
+            Array.from(checkbox).forEach(elem => {
+                elem.checked = false;
+            });
+            menu.menuList.map((elem)=>{
+                for(let i = 0;i<elem.ingr.length;i++){
+                    elem.ingr[i] = ingedientsList.indexOf(elem.ingr[i]);
+                }
+            });
+            localStorage.setItem("menuListV", JSON.stringify(menu.menuList));
+        } else {
+            alert("Введите название");
         }
     });
 
 }
-function renderMenu(menu){
+function renderMenu(menu) {
     switch (menu.sortType) {
         case "priceDown":
             menu.render(menu.filter(menu.sortPriceDown()));

@@ -100,7 +100,8 @@ ul, li {
 
 .header__nav__menu {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-between;
+    align-items: center;
     margin-left: 10%;
     min-width: 50%;
 }
@@ -110,6 +111,7 @@ ul, li {
     color: #fff;
     padding: 12px 0;
 }
+
 
 .header__nav__menu__button:hover {
     color: #f7941d;
@@ -182,6 +184,7 @@ ul, li {
     background: #3d3d3d;
     border-radius: 5px;
     margin: 30px;
+    padding: 30px 30px 30px 0;
 }
 
 .pizza h1 {
@@ -247,7 +250,16 @@ ul, li {
 .name{
     font-size: 1.3em;
 }
-
+.cartButton{
+    background-color: #646363;
+    border: 3px solid #555555;
+    border-radius: 10px;
+    font-size: 18px;
+    color: #fff;
+    width: 200px;
+    height: 40px;
+    margin: 30px;
+}
 .pizzaButton, .start-modal__question__button {
     background-color: #646363;
     border: 3px solid #555555;
@@ -259,11 +271,15 @@ ul, li {
     margin: 5px;
 }
 
-.pizzaButton:hover, .start-modal__question__button:hover {
+.cartButton:hover,
+.pizzaButton:hover, 
+.start-modal__question__button:hover {
     color: #f7941d;
     border-color: #f7941d;
 }
-
+.totalList{
+    text-align: center;
+}
 .pizza-plate li h1 {
     font-size: 17px;
     text-align: center;
@@ -313,18 +329,22 @@ ul, li {
     text-align: left;
 }
 
-.modal {
+.constructor__modal {
     display: none;
     position: fixed;
     left: 0;
     top: 0;
     width: 100%;
-    height: 100%;
     overflow: auto;
+    height: 100%;
+    z-index: 999;
     background-color: rgba(0, 0, 0, 0.7)
 }
+.constructor__modal--visible{
+    display: block;
+}
 
-.modal-content {
+.constructor__modal__content {
     background-color: #555555;
     margin: 15% auto;
     padding: 20px;

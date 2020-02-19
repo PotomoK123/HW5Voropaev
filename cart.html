@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,24 +9,26 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat:200,500,900&amp;subset=cyrillic" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
 </head>
+
 <body>
     <header class="header">
 
-        <nav class="nav">
-            <img src="img/logo1.png" alt="Pizza" class="logo">
-            <ul class="menu">
+        <nav class="header__nav">
+            <img src="img/logo1.png" alt="Pizza" class="header__nav__logo">
+            <ul class="header__nav__menu">
                 <li>
-                    <a href="index.html">Меню</a>
+                    <a href="index.html" class="header__nav__menu__button">Меню</a>
                 </li>
             </ul>
         </nav>
 
     </header>
-    <section class="pizza" id="menuSection">
-        <h1>Корзина:</h1>
-
-    </section>
-    <script src="js/basketJS.js"></script>
     
+    <footer class="footer" id="footer">
+        <p>© Eugene Voropaev, 2020</p>
+    </footer>
+    <script src="js/cartJS.js"></script>
+
 </body>
+
 </html>
