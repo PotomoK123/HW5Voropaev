@@ -59,7 +59,7 @@ class Menu {
         this.menuType = menuType;
         this.sortType = "default";
         this.cartArray = JSON.parse(localStorage.getItem("cartListV")) || [];
-
+        cartCounter.innerHTML = this.cartArray.length;
     }
     addPizza(item) {
         if (item instanceof Pizza) {
@@ -407,6 +407,7 @@ function renderPage(type) {
             let element = menu.menuList.find((elem) => elem.title == event.target.parentNode.dataset.title);
             let clone = Object.assign({},element);
             menu.cartArray.push(clone);
+            cartCounter.innerHTML = menu.cartArray.length;
         }
         if (event.target.className.indexOf("pizzaIcon") != -1) {
             if ((event.target.parentNode.lastChild != event.target && event.target.className.indexOf("pizzaIcon--rotatedoff") != -1) || event.target.className == "pizzaIcon") {

@@ -125,7 +125,18 @@ ul, li {
     margin: 0;
     align-items: center;
 }
-
+.header__nav__menu__button__counter{
+    position: absolute;
+    background-color: #f00;
+    border-radius: 10px;
+    width: 10px;
+    bottom: 0px;
+    right: -10px;
+    font-size: 0.5em;
+}
+#cart{
+    position: relative;
+}
 .filters {
     display: flex;
     justify-content: center;

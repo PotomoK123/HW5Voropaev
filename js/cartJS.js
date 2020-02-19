@@ -16,12 +16,12 @@ function showBasket() {
         calories.classList.add("pList");
         calories.innerHTML = cart[i].title + " Калории: " + cart[i].calories + " Цена: " + cart[i].price + "грн.";
         div.appendChild(calories);
-        total+=cart[i].price;
+        total += cart[i].price;
     }
-        let totalValue = document.createElement("p");
-        totalValue.classList.add("totalList");
-        totalValue.innerHTML = "Итого: " + total + "грн.";
-        menuSection.appendChild(totalValue);
+    let totalValue = document.createElement("p");
+    totalValue.classList.add("totalList");
+    totalValue.innerHTML = "Итого: " + total + "грн.";
+    menuSection.appendChild(totalValue);
     document.getElementById("clearCart").addEventListener("click", () => {
         localStorage.removeItem("cartListV");
         showBasket();
